@@ -1,5 +1,5 @@
 const supabase = require("../db/connection.js");
-const validDomains = ["@hotmail.com"];
+const validDomains = ["@my.yorku.com"];
 
 const register = async (req, res) => {
   console.log("Request body:", req.body);
