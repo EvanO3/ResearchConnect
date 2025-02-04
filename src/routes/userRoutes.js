@@ -7,6 +7,8 @@ const router = Router()
 //sign up route
 
 router.post("/register", userController.register)
+router.post("/login", userController.login)
+router.post("/updateProfile", userController.updateProfile);
 
 
 
