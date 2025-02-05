@@ -81,8 +81,7 @@ const login = async (req, res)=>{
 }
 
 //adds the users information to their respective db depending on the role, 
-// 
-// 
+
 
 
 
@@ -93,7 +92,7 @@ insert their data in the users table first
 -----------------------------------------*/
 
 //on update, grab exisitng user data there so they only update the specific field
-const updateProfile = async (req,res)=>{
+const initialUpdateProfile = async (req,res)=>{
   const body = req.body;
 
   if(!body.role){
@@ -190,6 +189,28 @@ return res.status(201).json({ msg: "Successfully updated profile" });
 }
 
 
+
+const logout = async (req, res)=>{
+    try{
+
+    const {error} =await supabase.auth.signOut({
+        //scope local allows then to sign out with the specific device they are on, and stayed signed in on another device if
+        //they want
+        scope:'local'
+      })
+   
+      if(error){
+        return handleError(res, error)
+      }
+      return res.status(200).json({msg:"successfully signed out"})
+    }catch(error){
+      console.log(`Error occurred ${error}`)
+      return res.status(500).json({msg:"Internal Server Error"})
+    }
+}
+
+
+
 // route for if the user exists then update using patch request
 
-module.exports = { register, login, updateProfile };
+module.exports = { register, login, initialUpdateProfile,logout};
