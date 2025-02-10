@@ -9,12 +9,14 @@ const router = Router()
 router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.post("/updateProfile", userController.initialUpdateProfile);
-//This route gives the ability to edit profiles specific things in profile
-// router.put()
-
-
-
 router.post("/logout", userController.logout);
+//This route gives the ability to edit profiles specific things in profile
+ router.patch("/editprofile/:id")
+ router.get("profile/:id")
+
+
+
+
 
 
 
