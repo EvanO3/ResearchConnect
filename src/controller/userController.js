@@ -80,8 +80,63 @@ const login = async (req, res)=>{
   }
 }
 
-//adds the users information to their respective db depending on the role, 
 
+const updateProfile= async (req,res)=>{
+  const updatedFields = req.body
+
+  const cleanedFields = Object.fromEntries(
+    Object.entries(updatedFields).filter(([_, value])=>value !== undefined && value!=null)
+  )
+
+
+  try{
+    let {data, error} = await supabase.auth.getUser();
+  
+    if(error || !data?.user?.id){
+     return handleError(res,error)
+    }
+
+  
+    const userId = data.user.id
+    //search to see if the user is a student or a professor
+
+    if(data?.user?.role ==='student'){
+        let { data: studentData, error: studentError } = await supabase
+          .from("students")
+          .update(cleanedFields)
+          .eq("user_id", userId);
+
+      if (studentError) {
+         return handleError(res, studentError);
+             }
+        return res.status(200).json({msg:'updated user', studentData})
+
+    }else if(data?.user?.role ==='professor'){
+ let { data: profData, error: profError } = await supabase
+   .from("professors")
+   .update(cleanedFields)
+   .eq("user_id", userId);
+
+   if(profError){
+    return handleError(res, profError)
+   }
+
+    return res.status(200).json({ msg: "updated user", profData });
+
+    }else{
+      return res.status(400).json({msg:"Invalid role"})
+    }
+    
+
+  }catch(error){
+    console.log("Error occurred: ", error)
+    return handleError(res, error)
+  }
+  //This route will be used to make a single update to something on a users profile i.e users email etc
+
+
+  
+}
 
 
 
@@ -90,6 +145,10 @@ const login = async (req, res)=>{
 insert their data in the users table first
 
 -----------------------------------------*/
+
+
+
+
 
 //on update, grab exisitng user data there so they only update the specific field
 const initialUpdateProfile = async (req,res)=>{
@@ -140,6 +199,9 @@ const initialUpdateProfile = async (req,res)=>{
     .eq('user_id', userId)
     .single()
 
+    if(userDataError){
+      return handleError(res, userDataError)
+    }
     //now given the primary key in the users database we can use the it as a foreign key in student or professor db
 
     const actualUserId = userData?.id
@@ -213,4 +275,10 @@ const logout = async (req, res)=>{
 
 // route for if the user exists then update using patch request
 
-module.exports = { register, login, initialUpdateProfile,logout};
+module.exports = {
+  register,
+  login,
+  initialUpdateProfile,
+  logout,
+  updateProfile,
+};
