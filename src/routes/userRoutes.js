@@ -1,7 +1,7 @@
 const Router = require("express");
 const userController = require("../controller/userController")
 const router = Router()
-
+const handleUserAuth = require("../utils/authentication");
 
 
 //sign up route
@@ -14,7 +14,12 @@ router.post("/logout", userController.logout);
  router.patch("/editprofile", userController.updateProfile)
  router.get("profile/:id")
 
+ router.get("/home", handleUserAuth, (req, res) => {
+  return res.status(200).json({msg:"Hello World"}) 
+ });
 
+
+ 
 
 
 
