@@ -1,4 +1,6 @@
 const supabase = require("../db/connection.js");
+const {v4: uuidv4}  = require("uuid")
+//Instead of holding valid domains here, make a supabase table, holding the valid dommains then check to see if the user matches one on signup
 const validDomains = ["@gmail.com"];
 
 //This allows for errors to be handled in a single place rather than repeating the same 400 logic
@@ -273,6 +275,52 @@ const logout = async (req, res)=>{
 
 
 
+
+
+// resume uploading {need to fix why it does not add file properly but instead gives blank text file}
+const uploadResume = async (req,res)=>{
+
+const {Resume} = req.body
+
+//check for the user_id
+
+try{
+  const {data, error} = await supabase.auth.getUser()
+  if(error || !data?.user?.id){
+    res.status(500).json({error:'Failed to retrieve the users data'})
+  }
+
+  const userId = data.user.id;
+  const filePath = userId + "/" + uuidv4();
+
+  console.log(filePath)
+
+  console.log(`user_id ${userId}`)
+    const {data:ResumeData, error:ResumeError } = await supabase.storage
+      .from('Resume')
+      .upload(filePath, Resume, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+      console.log("Trying to input the file")
+
+    if(ResumeError){
+      handleError(res, ResumeError.cuase)
+    }else{
+      res.status(200).json({Success:ResumeData})
+      // const resumeURL = ResumeData?.data?.
+      // const {error} =await supabase.from('students').update({Resume:})
+    }
+
+
+
+}catch(err){
+  handleError(res, err)
+}
+
+}
+
 // route for if the user exists then update using patch request
 
 module.exports = {
@@ -281,4 +329,5 @@ module.exports = {
   initialUpdateProfile,
   logout,
   updateProfile,
+  uploadResume,
 };
