@@ -3,11 +3,11 @@ const app = express();
 require("dotenv").config();
 const routes = require("./routes/Routes");
 const supabase = require("./db/connection.js");
-
+const fileUpload = require("express-fileupload");
 const PORT = process.env.PORT || 3000;
+app.use(fileUpload());
 app.use(express.json());
 app.use(routes);
-
 app.listen(PORT, () => {
   console.log(` Server is running and Listening on port ${PORT}`);
 });
