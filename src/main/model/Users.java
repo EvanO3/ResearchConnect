@@ -29,7 +29,8 @@ public class Users {
 @GeneratedValue(strategy =GenerationType.AUTO)
 private UUID id;
 
-
+@Column(name ="user_id", nullable = false, unique = true)
+private UUID authUserId;
 
 @Email
 @Column(name="email", nullable = false, unique = true)
@@ -67,9 +68,14 @@ public void onUpdate(){
 }
 
 
-@OneToOne
-@JoinColumn(name="user_id", referencedColumnName = "id", insertable = false, updatable = false)
-private AuthUser authUser;
+
+public getAuthUserId(){
+    return authUserId;
+}
+
+public setAuthUserId(UUID authUserId){
+   this.authUserId= authUserId;
+}
 
 public void setFirstName(String firstName){
     this.firstName = firstName;
@@ -81,7 +87,7 @@ public String getFirstName(){
 
 
 public void setLastName(String LastName){
-    this.LastName = firstName;
+    this.LastName = lastName;
 }
 
 public String getLastName(){
@@ -96,17 +102,18 @@ public void setRole(Role role){
     this.role= role;
 }
 
-public UUID getId(UUID Id){
+public UUID getId(){
     return id;
 }
 
-public void setId(UUID Id){
-    this.Id = Id;
+public void setId(UUID id){
+    this.Id = id;
 }
 
 public Users(){}
 
-public Users(String email, Role role, String firstName, String lastName ){
+public Users(UUID authUserId, String email, Role role, String firstName, String lastName ){
+    this.authUserId= authUserId;
     this.email= email;
     this.role= role;
     this.firstName= firstName;
