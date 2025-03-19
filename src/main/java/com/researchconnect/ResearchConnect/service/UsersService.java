@@ -6,10 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.researchconnect.ResearchConnect.DTO.RegisterDTO;
+import com.researchconnect.ResearchConnect.DTO.RegisterResponseDTO;
+import com.researchconnect.ResearchConnect.DTO.UserDTO;
+import com.researchconnect.ResearchConnect.Exceptions.CustomRegistrationException;
 import com.researchconnect.ResearchConnect.controller.AuthController;
 import com.researchconnect.ResearchConnect.repository.UserRespository;
-
+import java.util.UUID;
 import reactor.core.publisher.Mono;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UsersService {
@@ -47,9 +53,40 @@ public class UsersService {
     }
     
 
-//   public Mono<String> registerUser(String email, String password){
-   
-//  }
+  public Mono<RegisterResponseDTO> registerUser(String email, String password){
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+    return webClient.post()
+    .uri("/auth/v1/signup")
+    .bodyValue(new RegisterDTO(email, password))
+    .retrieve()
+    .bodyToMono(JsonNode.class)
+    .map(jsonNode ->{
+        logger.info("Supabase response: {}", jsonNode.toPrettyString()); 
+         JsonNode userNode = jsonNode.path("data").path("user");
+
+         String StringId =  jsonNode.path("id").asText();
+
+
+        logger.info("Extracted ID: '{}'", StringId);
+
+        UUID id;
+        try {
+            id = UUID.fromString(StringId);
+        } catch (IllegalArgumentException e) {
+            throw new CustomRegistrationException("Invalid UUID returned: " + StringId, e);
+        }
+         String usersEmail = userNode.path("email").asText();
+    
+         return new RegisterResponseDTO(id,usersEmail);
+        
+    
+         
+    })
+    .onErrorResume(e->{
+        return Mono.error(new CustomRegistrationException("Failed to register the user", e));
+    });
+    
+  }
 
 
 
