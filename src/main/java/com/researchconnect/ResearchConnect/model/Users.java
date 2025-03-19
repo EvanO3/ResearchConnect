@@ -1,3 +1,4 @@
+package com.researchconnect.ResearchConnect.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-
+import jakarta.validation.constraints.Size;
+import com.researchconnect.ResearchConnect.enums.*;
 import java.util.UUID;
 import java.sql.Timestamp;
 /*
@@ -69,11 +71,11 @@ public void onUpdate(){
 
 
 
-public getAuthUserId(){
+public UUID getAuthUserId(){
     return authUserId;
 }
 
-public setAuthUserId(UUID authUserId){
+public void setAuthUserId(UUID authUserId){
    this.authUserId= authUserId;
 }
 
@@ -86,12 +88,12 @@ public String getFirstName(){
 }
 
 
-public void setLastName(String LastName){
-    this.LastName = lastName;
+public void setLastName(String lastName){
+    this.lastName = lastName;
 }
 
 public String getLastName(){
-    return LastName;
+    return lastName;
 }
 
 public Role getRole(){
@@ -107,7 +109,7 @@ public UUID getId(){
 }
 
 public void setId(UUID id){
-    this.Id = id;
+    this.id = id;
 }
 
 public Users(){}

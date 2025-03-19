@@ -1,5 +1,5 @@
 
-
+package com.researchconnect.ResearchConnect.DTO;
 /**
  * DTO's  (Data Transfer Object) is a simple java class that is used
  * to transfer data between different layers of an application
