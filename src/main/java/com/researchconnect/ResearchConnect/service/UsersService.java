@@ -27,11 +27,16 @@ public class UsersService {
     public UsersService(UserRespository userRespository, WebClient webClient){
         this.userRespository = userRespository;
         this.webClient= webClient;
-;
+
     }
 
 
-    public Mono<Boolean> emailExists(String email){
+ public Mono<Boolean> emailExists(String email){
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+    //Returns a 403 forbidden, most likely because Anon key is being used instead of service role key,
+
+    // in controller also add error handling, if this route fails, do not continue
+
         return webClient.get().uri(uriBuilder -> uriBuilder
         .path("/auth/v1/admin/users")
         .queryParam("email", email)
@@ -39,6 +44,7 @@ public class UsersService {
         .retrieve()
         .bodyToMono(JsonNode.class)
         .map(response ->{
+            logger.info("Supabase response: {}", response.toPrettyString()); 
             JsonNode users = response.get("users");
             if(users !=null && users.isArray()){
                 for (JsonNode user : users) {
